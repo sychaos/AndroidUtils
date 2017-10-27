@@ -3,9 +3,11 @@ package cloudist.cc.library;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Rect;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
+import android.view.View;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -75,6 +77,29 @@ public class BitmapUtils {
     }
 
     /**
+     * 把一个View转化为bitmap
+     *
+     * @param view 待转化的View
+     */
+    public static Bitmap transformViewToBitmap(View view) {
+        // get current view bitmap
+        view.setDrawingCacheEnabled(true);
+        view.buildDrawingCache(true);
+        Bitmap bitmap = view.getDrawingCache(true);
+        Bitmap bmp = duplicateBitmap(bitmap);
+        if (bitmap == null) {
+            throw new IllegalArgumentException("can not transform this view");
+        }
+        if (!bitmap.isRecycled()) {
+            bitmap.recycle();
+            bitmap = null;
+        }
+        // clear the cache
+        view.setDrawingCacheEnabled(false);
+        return bmp;
+    }
+
+    /**
      * 获取目标文件的size
      *
      * @param file 目标文件
@@ -101,6 +126,22 @@ public class BitmapUtils {
             e.printStackTrace();
         }
         return size;
+    }
+
+    private static Bitmap duplicateBitmap(Bitmap bmpSrc) {
+        if (null == bmpSrc) {
+            return null;
+        }
+
+        int bmpSrcWidth = bmpSrc.getWidth();
+        int bmpSrcHeight = bmpSrc.getHeight();
+        Bitmap bmpDest = Bitmap.createBitmap(bmpSrcWidth, bmpSrcHeight, Bitmap.Config.ARGB_8888);
+        if (null != bmpDest) {
+            Canvas canvas = new Canvas(bmpDest);
+            Rect rect = new Rect(0, 0, bmpSrcWidth, bmpSrcHeight);
+            canvas.drawBitmap(bmpSrc, rect, rect, null);
+        }
+        return bmpDest;
     }
 
     /**
