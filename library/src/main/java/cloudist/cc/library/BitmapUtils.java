@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Build;
 import android.os.Environment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -76,6 +77,16 @@ public class BitmapUtils {
         return bmpWithBorder;
     }
 
+    public int getBitmapSize(Bitmap bitmap){
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT){    //API 19
+            return bitmap.getAllocationByteCount();
+        }
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1){//API 12
+            return bitmap.getByteCount();
+        }
+        return bitmap.getRowBytes() * bitmap.getHeight();                //earlier version
+    }
+
     /**
      * 把一个View转化为bitmap
      *
@@ -97,35 +108,6 @@ public class BitmapUtils {
         // clear the cache
         view.setDrawingCacheEnabled(false);
         return bmp;
-    }
-
-    /**
-     * 获取目标文件的size
-     *
-     * @param file 目标文件
-     * @return size 单位byte
-     */
-    public static long getFolderSize(File file) {
-        long size = 0;
-        try {
-            File[] fileList = file.listFiles();
-            int size2 = 0;
-            if (fileList != null) {
-                size2 = fileList.length;
-                for (int i = 0; i < size2; i++) {
-                    // 如果下面还有文件
-                    if (fileList[i].isDirectory()) {
-                        size = size + getFolderSize(fileList[i]);
-                    } else {
-                        size = size + fileList[i].length();
-                    }
-                }
-            }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return size;
     }
 
     private static Bitmap duplicateBitmap(Bitmap bmpSrc) {

@@ -30,6 +30,7 @@ public class FragmentUtils {
             }
         }
         FragmentTransaction transaction = fragmentManager.beginTransaction();
+//        Fragment的出入场动画
 //        transaction.setCustomAnimations(R.anim.push_left_in_no_alpha,
 //                R.anim.push_left_out_no_alpha,
 //                R.anim.push_right_in_no_alpha,
